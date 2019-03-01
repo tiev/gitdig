@@ -120,6 +120,7 @@ module Gitdig
       TTY::Which.exist?(*args)
     end
 
+    # Config for the tool
     def configs
       require 'tty-config'
       @configs ||= TTY::Config.new.tap do |c|
@@ -130,6 +131,7 @@ module Gitdig
       end
     end
 
+    # Octokit client for Github
     def github_client
       require 'octokit'
       @github_client ||= Octokit::Client.new(

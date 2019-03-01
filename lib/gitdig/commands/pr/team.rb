@@ -52,6 +52,8 @@ module Gitdig
                        github_client.child_teams(@options[:team])
                      elsif @options[:organization]
                        github_client.organization_teams(@options[:organization])
+                     elsif (org = configs.fetch(:org))
+                       github_client.organization_teams(org)
                      end
         end
 
@@ -61,7 +63,8 @@ module Gitdig
 
         def pr_output(pull)
           repo = REPO_REGEX.match(pull.repository_url).to_s
-          "* [#{pull.title}](#{pull.html_url}) #{repo}##{pull.number} @#{pull.user.login}"
+          "* [#{pull.title}](#{pull.html_url}) <#{pull.state}>"\
+            " #{repo}##{pull.number} @#{pull.user.login}"
         end
       end
     end
