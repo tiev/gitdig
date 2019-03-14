@@ -18,17 +18,17 @@ module Gitdig
         end
 
         def execute(input: $stdin, output: $stdout)
-          @my_prompt = prompt(input: input, output: output)
-          @my_pager = TTY::Pager::BasicPager.new(input: input, output: output)
+          init_attrs(input, output)
           pr = nil
 
           Dir.mktmpdir do |dir|
             unless copy_content(@path, dir)
-              my_prompt.error('Given path is not file nor directory!')
-              break
+              break my_prompt.error('Given path is not file nor directory!')
             end
 
             prepare_content(dir)
+            break my_prompt.warn('Ignored because no changes!') unless @changed
+
             pr = create_pr(dir)
             my_prompt.ok("Pull Request: #{pr.html_url}") if pr
           end
@@ -37,6 +37,11 @@ module Gitdig
         end
 
         private
+
+        def init_attrs(input, output)
+          @my_prompt = prompt(input: input, output: output)
+          @my_pager = TTY::Pager::BasicPager.new(input: input, output: output)
+        end
 
         def create_pr(dir) # rubocop:disable Metrics/AbcSize
           return unless my_prompt.yes?("Create PR on #{@repository}?")
@@ -81,6 +86,7 @@ module Gitdig
         end
 
         def prepare_content(dir)
+          @changed = false
           my_prompt.say("***Repository #{@repository}***")
           Dir.glob('**/*', File::FNM_DOTMATCH, base: dir) do |file|
             full_path = File.join(dir, file)
@@ -97,6 +103,7 @@ module Gitdig
         def diff_remote_file(file, full_path, remote_file)
           if remote_file.nil?
             my_prompt.say("New file: #{file}")
+            @changed = true
             return nil
           end
 
@@ -113,12 +120,15 @@ module Gitdig
           loop do
             choice = prompt_file_choice(file)
             case choice
+            when :ok
+              @changed = true
             when :no
               File.open(full_path, 'w') { |f| f.write(remote_file) }
             when :diff
               my_pager.page(diff)
             when :edit
               open_file_to_merge(full_path, remote_file)
+              @changed = true unless diff_of(remote_file, full_path).empty?
             end
             break if choice != :diff
           end
