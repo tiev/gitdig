@@ -30,7 +30,7 @@ module Gitdig
 
             prepare_content(dir)
             pr = create_pr(dir)
-            my_prompt.ok("Pull Request: #{pr.html_url}")
+            my_prompt.ok("Pull Request: #{pr.html_url}") if pr
           end
 
           pr
@@ -39,6 +39,8 @@ module Gitdig
         private
 
         def create_pr(dir) # rubocop:disable Metrics/AbcSize
+          return unless my_prompt.yes?("Create PR on #{@repository}?")
+
           tree = github_client.create_tree(
             @repository,
             file_objects(dir),
@@ -79,25 +81,26 @@ module Gitdig
         end
 
         def prepare_content(dir)
+          my_prompt.say("***Repository #{@repository}***")
           Dir.glob('**/*', File::FNM_DOTMATCH, base: dir) do |file|
             full_path = File.join(dir, file)
             next unless File.file?(full_path)
 
             remote_file = get_remote_file(file)
-            diff = diff_remote_file(full_path, remote_file)
+            diff = diff_remote_file(file, full_path, remote_file)
             next unless diff
 
             solve_file(file, full_path, remote_file, diff)
           end
         end
 
-        def diff_remote_file(file, remote_file)
+        def diff_remote_file(file, full_path, remote_file)
           if remote_file.nil?
             my_prompt.say("New file: #{file}")
             return nil
           end
 
-          diff = diff_of(remote_file, file)
+          diff = diff_of(remote_file, full_path)
           if diff.empty?
             my_prompt.say("Identical file: #{file}")
             return nil
