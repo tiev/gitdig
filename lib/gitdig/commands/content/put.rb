@@ -20,6 +20,7 @@ module Gitdig
         def execute(input: $stdin, output: $stdout)
           @my_prompt = prompt(input: input, output: output)
           @my_pager = TTY::Pager::BasicPager.new(input: input, output: output)
+          pr = nil
 
           Dir.mktmpdir do |dir|
             unless copy_content(@path, dir)
@@ -31,6 +32,8 @@ module Gitdig
             pr = create_pr(dir)
             my_prompt.ok("Pull Request: #{pr.html_url}")
           end
+
+          pr
         end
 
         private
@@ -90,13 +93,13 @@ module Gitdig
 
         def diff_remote_file(file, remote_file)
           if remote_file.nil?
-            my_prompt.ok("New file: #{file}")
+            my_prompt.say("New file: #{file}")
             return nil
           end
 
           diff = diff_of(remote_file, file)
           if diff.empty?
-            my_prompt.ok("Identical file: #{file}")
+            my_prompt.say("Identical file: #{file}")
             return nil
           end
 

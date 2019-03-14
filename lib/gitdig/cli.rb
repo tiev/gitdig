@@ -21,6 +21,9 @@ module Gitdig
     end
     map %w[--version -v] => :version
 
+    require_relative 'commands/gh_action'
+    register Gitdig::Commands::GhAction, 'gh_action', 'gh_action [SUBCOMMAND]', 'Command description...'
+
     require_relative 'commands/content'
     register Gitdig::Commands::Content, 'content', 'content [SUBCOMMAND]', 'Command description...'
 
