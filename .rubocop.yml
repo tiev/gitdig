@@ -7,5 +7,8 @@ Metrics/MethodLength:
 Metrics/ClassLength:
   Max: 200
 
+Metrics/AbcSize:
+  Max: 20
+
 Style/Documentation:
   Enabled: false

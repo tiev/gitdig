@@ -34,18 +34,27 @@ module Gitdig
             when :status
               check_status
             when :install
-              do_install
+              install
             end
             break if cmd == :quit
           end
         end
 
         def check_status
-          targets = my_prompt.multi_select(
-            "Select repositories to check installation of #{@action_name}",
-            repo_list,
-            filter: true
-          )
+          kind = my_prompt.enum_select('Check status?', %i[individuals all])
+          do_check_status(kind)
+        end
+
+        def do_check_status(kind)
+          targets = if kind == :all
+                      repo_list.map { |choice| choice[:value] }
+                    else
+                      my_prompt.multi_select(
+                        "Check installation of #{@action_name} on",
+                        repo_list,
+                        filter: true
+                      )
+                    end
 
           targets.each do |repository|
             update_status(repository)
@@ -74,16 +83,41 @@ module Gitdig
           end
         end
 
-        def do_install
-          targets = my_prompt.multi_select(
-            "Select repositories to install #{@action_name}",
-            target_list,
-            filter: true
-          )
+        def install
+          kind = ask_install_kind
+          targets = targets_of_kind(kind)
           return if targets.empty?
 
           collect_pr_options
           process_targets(targets)
+        end
+
+        def ask_install_kind
+          my_prompt.enum_select('Install on which?') do |menu|
+            menu.default 2
+
+            menu.choice 'All', :all
+            menu.choice 'Individuals', :individuals
+            menu.choice 'Not installed yet', :off
+            menu.choice 'Installed ones', :on
+          end
+        end
+
+        def targets_of_kind(kind)
+          case kind
+          when :all
+            target_list.map { |choice| choice[:value] unless choice[:disabled] }.compact
+          when :off, :on
+            do_check_status(:all)
+            target_list.map do |choice|
+              choice[:value] if choice[:name].end_with?("(#{kind})")
+            end.compact
+          else
+            my_prompt.multi_select(
+              "Install #{@action_name} on", target_list,
+              filter: true
+            )
+          end
         end
 
         def process_targets(targets)
