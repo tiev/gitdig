@@ -21,6 +21,12 @@ module Gitdig
     end
     map %w[--version -v] => :version
 
+    require_relative 'commands/content'
+    register Gitdig::Commands::Content, 'content', 'content [SUBCOMMAND]', 'Command description...'
+
+    require_relative 'commands/org'
+    register Gitdig::Commands::Org, 'org', 'org [SUBCOMMAND]', 'Search repositories within organization'
+
     require_relative 'commands/pr'
     register Gitdig::Commands::Pr, 'pr', 'pr [SUBCOMMAND]', 'Command description...'
 
