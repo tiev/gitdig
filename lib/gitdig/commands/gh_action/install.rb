@@ -48,28 +48,40 @@ module Gitdig
           )
 
           targets.each do |repository|
-            installation = Installation.new(repository, @action_name, {}).execute
-            status = status_of(installation)
-
-            key = "#{repository} (#{status})"
-            replace_repo_choice(repository, key)
-
-            installation[:active] ? my_prompt.ok(key) : my_prompt.warn(key)
+            update_status(repository)
           end
         end
 
-        def replace_repo_choice(repository, title)
-          pair = repo_list.rassoc(repository)
-          repo_list.delete(pair[0]) if pair
-          repo_list[title] = repository
+        def update_status(repository)
+          installation = Installation.new(repository, @action_name, {}).execute
+          status = status_of(installation)
+
+          name = "#{repository} (#{status})"
+          replace_in_lists(name, repository, status)
+
+          installation[:active] ? my_prompt.ok(name) : my_prompt.warn(name)
+        end
+
+        def replace_in_lists(name, value, status)
+          repo_choice = { name: name, value: value }
+          target_choice = repo_choice.dup
+          target_choice[:disabled] = '(branch exists)' if status == 'branch'
+          repo_list.map! do |choice|
+            choice[:value] == value ? repo_choice : choice
+          end
+          target_list.map! do |choice|
+            choice[:value] == value ? target_choice : choice
+          end
         end
 
         def do_install
           targets = my_prompt.multi_select(
             "Select repositories to install #{@action_name}",
-            repo_list,
+            target_list,
             filter: true
           )
+          return if targets.empty?
+
           collect_pr_options
           process_targets(targets)
         end
@@ -85,7 +97,11 @@ module Gitdig
         end
 
         def repo_list
-          @repo_list ||= repositories.map { |repository| [repository, repository] }.to_h
+          @repo_list ||= repositories.map { |repository| { name: repository, value: repository } }
+        end
+
+        def target_list
+          @target_list ||= repo_list.dup
         end
 
         def repositories
