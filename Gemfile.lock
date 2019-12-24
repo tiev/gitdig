@@ -100,7 +100,7 @@ GEM
     tty-pie (0.1.0)
       pastel (~> 0.7.2)
       tty-cursor (~> 0.6.0)
-    tty-platform (0.2.0)
+    tty-platform (0.2.1)
     tty-progressbar (0.16.0)
       strings-ansi (~> 0.1.0)
       tty-cursor (~> 0.6.0)
