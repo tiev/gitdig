@@ -126,7 +126,7 @@ GEM
       strings (~> 0.1.0)
       tty-screen (~> 0.6.4)
     tty-tree (0.2.0)
-    tty-which (0.4.1)
+    tty-which (0.4.2)
     unicode-display_width (1.6.0)
     unicode_utils (1.4.0)
     wisper (2.0.0)
