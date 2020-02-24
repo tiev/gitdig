@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-editor", "~> 0.5.0"
   spec.add_dependency "tty-file", ">= 0.7", "< 0.9"
   spec.add_dependency "tty-font", ">= 0.2", "< 0.6"
-  spec.add_dependency "tty-markdown", "~> 0.5.0"
+  spec.add_dependency "tty-markdown", ">= 0.5", "< 0.7"
   spec.add_dependency "tty-pager", "~> 0.12.0"
   spec.add_dependency "tty-pie", ">= 0.1", "< 0.4"
   spec.add_dependency "tty-platform", ">= 0.2", "< 0.4"
