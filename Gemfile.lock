@@ -22,7 +22,7 @@ PATH
       tty-screen (~> 0.6)
       tty-spinner (~> 0.9.0)
       tty-table (~> 0.10.0)
-      tty-tree (~> 0.2.0)
+      tty-tree (>= 0.2, < 0.5)
       tty-which (~> 0.4)
 
 GEM
@@ -125,7 +125,7 @@ GEM
       pastel (~> 0.7.2)
       strings (~> 0.1.0)
       tty-screen (~> 0.6.4)
-    tty-tree (0.2.0)
+    tty-tree (0.4.0)
     tty-which (0.4.2)
     unicode-display_width (1.6.1)
     unicode_utils (1.4.0)
