@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-config", "~> 0.3.0"
   spec.add_dependency "tty-cursor", "~> 0.6"
   spec.add_dependency "tty-editor", "~> 0.5.0"
-  spec.add_dependency "tty-file", "~> 0.7.0"
+  spec.add_dependency "tty-file", ">= 0.7", "< 0.9"
   spec.add_dependency "tty-font", "~> 0.2.0"
   spec.add_dependency "tty-markdown", "~> 0.5.0"
   spec.add_dependency "tty-pager", "~> 0.12.0"
